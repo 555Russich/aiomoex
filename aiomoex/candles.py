@@ -3,12 +3,12 @@
 import aiohttp
 
 from aiomoex import client, request_helpers
-from aiomoex.request_helpers import (
-    CANDLE_BORDERS,
-    CANDLES,
-    DEFAULT_BOARD,
-    DEFAULT_ENGINE,
+from aiomoex.constants import (
+    C,
+    CandleInterval,
     DEFAULT_MARKET,
+    DEFAULT_ENGINE,
+    DEFAULT_BOARD
 )
 
 
@@ -38,7 +38,7 @@ async def get_market_candle_borders(
         engine=engine,
         market=market,
         security=security,
-        ending=CANDLE_BORDERS,
+        ending=C.candle_borders,
     )
     table = "borders"
     return await request_helpers.get_short_data(session, url, table)
@@ -51,7 +51,7 @@ async def get_board_candle_borders(
     market: str = DEFAULT_MARKET,
     engine: str = DEFAULT_ENGINE,
 ) -> client.Table:
-    """Получить таблицу интервалов доступных дат для указанного режиме торгов.
+    """Получить таблицу интервалов доступных дат для указанного режима торгов.
 
     Описание запроса - https://iss.moex.com/iss/reference/48
 
@@ -74,7 +74,7 @@ async def get_board_candle_borders(
         market=market,
         board=board,
         security=security,
-        ending=CANDLE_BORDERS,
+        ending=C.candle_borders,
     )
     table = "borders"
     return await request_helpers.get_short_data(session, url, table)
@@ -83,7 +83,7 @@ async def get_board_candle_borders(
 async def get_market_candles(
     session: aiohttp.ClientSession,
     security: str,
-    interval: int = 24,
+    interval: int = CandleInterval.DAY,
     start: str | None = None,
     end: str | None = None,
     market: str = DEFAULT_MARKET,
@@ -116,16 +116,15 @@ async def get_market_candles(
     :return:
         Список словарей, которые напрямую конвертируется в pandas.DataFrame.
     """
-    url = request_helpers.make_url(engine=engine, market=market, security=security, ending=CANDLES)
-    table = CANDLES
+    url = request_helpers.make_url(engine=engine, market=market, security=security, ending=C.candles)
     query = request_helpers.make_query(interval=interval, start=start, end=end)
-    return await request_helpers.get_long_data(session, url, table, query)
+    return await request_helpers.get_long_data(session=session, url=url, table_name=C.candles, query=query)
 
 
 async def get_board_candles(
     session: aiohttp.ClientSession,
     security: str,
-    interval: int = 24,
+    interval: CandleInterval = CandleInterval.DAY,
     start: str | None = None,
     end: str | None = None,
     board: str = DEFAULT_BOARD,
@@ -141,8 +140,7 @@ async def get_board_candles(
     :param security:
         Тикер ценной бумаги.
     :param interval:
-        Размер свечки - целое число 1 (1 минута), 10 (10 минут), 60 (1 час), 24 (1 день), 7 (1 неделя),
-        31 (1 месяц) или 4 (1 квартал). По умолчанию дневные данные.
+        Размер свечки. По умолчанию дневные данные.
     :param start:
         Дата вида ГГГГ-ММ-ДД. При отсутствии данные будут загружены с начала истории.
     :param end:
@@ -162,8 +160,7 @@ async def get_board_candles(
         market=market,
         board=board,
         security=security,
-        ending=CANDLES,
+        ending=C.candles,
     )
-    table = CANDLES
     query = request_helpers.make_query(interval=interval, start=start, end=end)
-    return await request_helpers.get_long_data(session, url, table, query)
+    return await request_helpers.get_long_data(session=session, url=url, table_name=C.candles, query=query)

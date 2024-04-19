@@ -16,7 +16,7 @@ from aiomoex.candles import (
 )
 from aiomoex.client import ISSClient, TableRow, TablesDict, Values
 from aiomoex.history import get_board_dates, get_board_history, get_board_securities, get_market_history
-from aiomoex.reference import find_securities, get_reference
+from aiomoex.reference import find_securities, get_reference, get_security
 
 __all__ = [
     "get_board_candle_borders",
@@ -33,4 +33,5 @@ __all__ = [
     "get_market_history",
     "find_securities",
     "get_reference",
+    "get_security"
 ]

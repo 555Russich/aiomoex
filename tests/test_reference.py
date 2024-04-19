@@ -19,7 +19,15 @@ check_points = [
 
 
 @pytest.mark.parametrize(("reg_number", "expected"), check_points)
-async def test_find_find_securities(http_session, reg_number, expected):
+async def test_find_securities(http_session, reg_number, expected):
     data = await reference.find_securities(http_session, reg_number)
     assert isinstance(data, list)
     assert expected == {row["secid"] for row in data if row["regnumber"] == reg_number}
+
+
+async def test_get_futures(http_session):
+    data = await reference.get_futures(http_session, asset_code='SBRF', show_expired=True)
+    assert isinstance(data, list)
+    assert len(data) > 10
+    for d in data:
+        assert d['asset_code'] == 'SBRF'
