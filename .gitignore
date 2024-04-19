@@ -21,3 +21,6 @@ coverage.xml
 
 # VSCode
 .vscode
+
+# PyCharm
+.idea/
