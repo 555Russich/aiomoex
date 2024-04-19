@@ -1,6 +1,5 @@
 """Асинхронный клиент для MOEX ISS."""
-from collections.abc import AsyncIterable, AsyncIterator
-from typing import cast
+from typing import cast, AsyncIterable, AsyncIterator
 
 import aiohttp
 from aiohttp import client_exceptions

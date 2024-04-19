@@ -1,6 +1,7 @@
 import pytest
 
 from aiomoex import candles
+from aiomoex.constants import CandleInterval
 
 
 async def test_get_market_candle_borders(http_session):
@@ -10,13 +11,13 @@ async def test_get_market_candle_borders(http_session):
     for i in data:
         del i["end"]
     assert data == [
-        {"begin": "2011-12-15 10:00:00", "interval": 1, "board_group_id": 57},
-        {"begin": "2003-07-01 00:00:00", "interval": 4, "board_group_id": 57},
-        {"begin": "2003-07-28 00:00:00", "interval": 7, "board_group_id": 57},
-        {"begin": "2011-12-08 10:00:00", "interval": 10, "board_group_id": 57},
-        {"begin": "2003-07-31 00:00:00", "interval": 24, "board_group_id": 57},
-        {"begin": "2003-07-01 00:00:00", "interval": 31, "board_group_id": 57},
-        {"begin": "2011-11-17 10:00:00", "interval": 60, "board_group_id": 57},
+        {"begin": "2011-12-15 10:00:00", "interval": CandleInterval.MIN_1, "board_group_id": 57},
+        {"begin": "2003-07-01 00:00:00", "interval": CandleInterval.QUARTER, "board_group_id": 57},
+        {"begin": "2003-07-28 00:00:00", "interval": CandleInterval.WEEK, "board_group_id": 57},
+        {"begin": "2011-12-08 10:00:00", "interval": CandleInterval.MIN_10, "board_group_id": 57},
+        {"begin": "2003-07-31 00:00:00", "interval": CandleInterval.DAY, "board_group_id": 57},
+        {"begin": "2003-07-01 00:00:00", "interval": CandleInterval.MONTH, "board_group_id": 57},
+        {"begin": "2011-11-17 10:00:00", "interval": CandleInterval.HOUR, "board_group_id": 57},
     ]
 
 
@@ -27,18 +28,19 @@ async def test_get_board_candle_borders(http_session):
     for i in data:
         del i["end"]
     assert data == [
-        {"begin": "2016-07-01 09:59:00", "interval": 1},
-        {"begin": "2016-07-01 00:00:00", "interval": 4},
-        {"begin": "2016-06-27 00:00:00", "interval": 7},
-        {"begin": "2016-07-01 09:50:00", "interval": 10},
-        {"begin": "2016-07-01 00:00:00", "interval": 24},
-        {"begin": "2016-07-01 00:00:00", "interval": 31},
-        {"begin": "2016-07-01 09:00:00", "interval": 60},
+        {"begin": "2016-07-01 09:59:00", "interval": CandleInterval.MIN_1},
+        {"begin": "2016-07-01 00:00:00", "interval": CandleInterval.QUARTER},
+        {"begin": "2016-06-27 00:00:00", "interval": CandleInterval.WEEK},
+        {"begin": "2016-07-01 09:50:00", "interval": CandleInterval.MIN_10},
+        {"begin": "2016-07-01 00:00:00", "interval": CandleInterval.DAY},
+        {"begin": "2016-07-01 00:00:00", "interval": CandleInterval.MONTH},
+        {"begin": "2016-07-01 09:00:00", "interval": CandleInterval.HOUR},
     ]
 
 
 async def test_get_market_candles_from_beginning(http_session):
-    data = await candles.get_market_candles(http_session, "RTKM", interval=1, end="2011-12-16")
+    data = await candles.get_market_candles(http_session, "RTKM",
+                                            interval=CandleInterval.MIN_1, end="2011-12-16")
     assert isinstance(data, list)
     assert len(data) > 500
     assert len(data[0]) == 8
@@ -53,7 +55,8 @@ async def test_get_market_candles_from_beginning(http_session):
 
 
 async def test_get_market_candles_to_end(http_session):
-    data = await candles.get_market_candles(http_session, "LSRG", interval=24, start="2020-08-20")
+    data = await candles.get_market_candles(http_session, "LSRG", interval=CandleInterval.DAY,
+                                            start="2020-08-20")
     assert isinstance(data, list)
     assert len(data) > 13
     assert len(data[0]) == 8
@@ -66,13 +69,14 @@ async def test_get_market_candles_to_end(http_session):
 
 
 async def test_get_market_candles_empty(http_session):
-    data = await candles.get_market_candles(http_session, "KSGR", interval=24)
+    data = await candles.get_market_candles(http_session, "KSGR", interval=CandleInterval.DAY)
     assert isinstance(data, list)
     assert len(data) == 0
 
 
 async def test_get_board_candles_from_beginning(http_session):
-    data = await candles.get_board_candles(http_session, "MTSS", interval=10, end="2011-12-22")
+    data = await candles.get_board_candles(http_session, "MTSS", interval=CandleInterval.MIN_10,
+                                           end="2011-12-22")
     assert isinstance(data, list)
     assert len(data) > 500
     assert len(data[0]) == 8
@@ -87,7 +91,8 @@ async def test_get_board_candles_from_beginning(http_session):
 
 
 async def test_get_board_candles_to_end(http_session):
-    data = await candles.get_board_candles(http_session, "TTLK", interval=31, start="2014-07-01")
+    data = await candles.get_board_candles(http_session, "TTLK", interval=CandleInterval.MONTH,
+                                           start="2014-07-01")
     assert isinstance(data, list)
     assert len(data) > 52
     assert len(data[0]) == 8

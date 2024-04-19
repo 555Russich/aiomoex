@@ -1,24 +1,15 @@
 """Вспомогательные функции для построения запросов."""
 from collections.abc import Iterable
-from typing import Final
 
 import aiohttp
 
 from aiomoex import client
 
-# Режимы по умолчанию для запросов
-DEFAULT_ENGINE: Final = "stock"
-DEFAULT_MARKET: Final = "shares"
-DEFAULT_BOARD: Final = "TQBR"
-# Ключевые плейсхолдеры и константы для запросов
-SECURITIES: Final = "securities"
-CANDLE_BORDERS: Final = "candleborders"
-CANDLES: Final = "candles"
-
 
 def make_url(
     *,
     history: bool | None = None,
+    statistics: bool | None = None,
     engine: str | None = None,
     market: str | None = None,
     board: str | None = None,
@@ -29,6 +20,8 @@ def make_url(
     url_parts = ["https://iss.moex.com/iss"]
     if history:
         url_parts.append("/history")
+    if statistics:
+        url_parts.append('/statistics')
     if engine:
         url_parts.append(f"/engines/{engine}")
     if market:
@@ -91,6 +84,7 @@ def get_table(table_dict: client.TablesDict, table_name: str) -> client.Table:
     try:
         table = table_dict[table_name]
     except KeyError as err:
+        print(table_dict)
         raise client.ISSMoexError(f"Отсутствует таблица {table_name} в данных") from err
     return table
 

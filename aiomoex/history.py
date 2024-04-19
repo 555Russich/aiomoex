@@ -4,7 +4,7 @@ from collections.abc import Iterable
 import aiohttp
 
 from aiomoex import client, request_helpers
-from aiomoex.request_helpers import DEFAULT_BOARD, DEFAULT_ENGINE, DEFAULT_MARKET, SECURITIES
+from aiomoex.constants import C, DEFAULT_BOARD, DEFAULT_ENGINE, DEFAULT_MARKET
 
 
 async def get_board_dates(
@@ -42,7 +42,7 @@ async def get_board_dates(
 
 async def get_board_securities(
     session: aiohttp.ClientSession,
-    table: str = SECURITIES,
+    table: str = C.securities,
     columns: Iterable[str] | None = ("SECID", "REGNUMBER", "LOTSIZE", "SHORTNAME"),
     board: str = DEFAULT_BOARD,
     market: str = DEFAULT_MARKET,
@@ -70,7 +70,7 @@ async def get_board_securities(
     :return:
         Список словарей, которые напрямую конвертируется в pandas.DataFrame
     """
-    url = request_helpers.make_url(engine=engine, market=market, board=board, ending=SECURITIES)
+    url = request_helpers.make_url(engine=engine, market=market, board=board, ending=C.securities)
     query = request_helpers.make_query(table=table, columns=columns)
     return await request_helpers.get_short_data(session, url, table, query)
 
